@@ -1,5 +1,17 @@
 #hide bot token
 token.txt
 
+#hide bot owner id
+owner_id.txt
+
 #hide logo purchase link
 logo_purchase.txt
+
+#hide python library list
+python_libraries.txt
+
+#hide translation requests
+requests.txt
+
+#hide word files
+nouns.txt
