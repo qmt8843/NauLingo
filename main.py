@@ -1,6 +1,9 @@
-import discord
+import disnake
 import translator
 import json
+from disnake.ext import commands
+from disnake import ApplicationCommandInteraction
+from disnake import AppCmdInter
 
 #establish the bot's token
 with open("token.txt") as token_file:
@@ -9,8 +12,9 @@ with open("token.txt") as token_file:
 #establish a command trigger symbol
 COMMAND_SYMBOL = "&"
 
-#establish a channel where bot will work
-CHAT = "general"
+#establish the bot's token
+with open("oauth2.txt") as token_file:
+    INVITE_LINK = token_file.readline().strip()
 
 #establishes word files
 REQUEST_FILE = "requests.txt"
@@ -18,69 +22,133 @@ REQUEST_FILE = "requests.txt"
 #establishes a file for stored word dictionaries
 STORAGE_FILE = "data/dict_storage.json"
 
-client = discord.Client()
+#establish a command trigger symbol
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(f"{COMMAND_SYMBOL}"), test_guilds=[309140888485888002])
 
-#make initial connection to discord
-@client.event
-async def on_ready():
-    print("We have logged in as {0.user}".format(client))
+######################
+###    BUTTONS     ###
+######################
 
-#handle message events
-@client.event
-async def on_message(message):
-    username = str(message.author).split('#')[0]
-    mention = str(message.author.mention)
-    user_message = str(message.content)
+#This class is responsible for holding all link buttons
+class LinkButtons(disnake.ui.View):
+    def __init__(self):
+        super().__init__()
 
-    #create split message variables before try, so that future if doesn't throw an error
-    user_message_command = None
-    user_message_arg = None
-    #for better use of commands, this will try to seperate the command prompt from the arguments
-    try:
-        user_message_command, user_message_arg = user_message.split(" ", 1)
-        user_message_command.lower()
-        user_message_arg.lower()
-    except:
-        print(f"{username} issued a single line command")
-    channel = str(message.channel.name)
+        self.view = disnake.ui.View()
+        self.view.add_item(
+            disnake.ui.Button(
+                style=disnake.ButtonStyle.url,
+                label="🌐 Website",
+                url="https://www.naumarian.info/",
+            )
+        )
+        self.view.add_item(
+            disnake.ui.Button(
+                style=disnake.ButtonStyle.url,
+                label="➕ Invite",
+                url=f"{INVITE_LINK}",
+            )
+        )
 
-    #stops bot from responding to itself
-    if message.author == client.user:
-        return
+######################
+### SLASH COMMANDS ###
+######################
 
-    if channel == CHAT: #this statement keeps the bot to a single channel
-        print(f'{username}: {user_message} ({channel})')
-        #translate command logic
-        if user_message_command == COMMAND_SYMBOL+"translate" or user_message_command == COMMAND_SYMBOL+"t":
-            converted_message = translator.take_input(user_message_arg) #hands off translation logic to translator.py
-            await message.channel.send(f'{mention}, I converted {user_message_arg} to: ```{converted_message}```')
-            return
+# @bot.slash_command(name='ping', description="Sends back bot latency")
+# async def ping(inter: ApplicationCommandInteraction):
+    
+#     embed = disnake.Embed(
+#         title="Pong:",
+#         description=f"Latency: {round(bot.latency*1000)}ms"
+        
+#     )
 
-        #request command logic
-        #this command allows users to request words that don't have a translation
-        elif user_message_command == COMMAND_SYMBOL+"request" or user_message_command == COMMAND_SYMBOL+"r":
-            with open(REQUEST_FILE) as request_file: #searches through current requests (faster)
+#     website = Buttons().view
+#     return await inter.send(embed=embed, ephemeral=True, view = website)
+
+#translate command logic
+@bot.slash_command(name='translate', description="Translates English into Naumarian")
+async def translate(inter: ApplicationCommandInteraction, sentence: str):
+    translated = translator.take_input(sentence)
+    embed = disnake.Embed(
+        title="Naumarian translation:",
+        description=f"{translated}"
+    )
+    website = LinkButtons().view
+    return await inter.send(embed=embed, ephemeral=True, view = website)
+
+#public translate command logic
+#just isn't ephemeral
+@bot.slash_command(name='publictranslate', description="Translates English into Naumarian")
+async def translate(inter: ApplicationCommandInteraction, sentence: str):
+    translated = translator.take_input(sentence)
+    embed = disnake.Embed(
+        title="Naumarian translation:",
+        description=f"{translated}"
+    )
+    website = LinkButtons().view
+    return await inter.send(embed=embed, ephemeral=False, view = website)
+
+#request command logic
+#this command allows users to request words that don't have a translation
+@bot.slash_command(name='request', description="Makes a translation request")
+async def request(inter: ApplicationCommandInteraction, word: str):
+
+    if len(word.split(" ")) > 0:
+        embed = disnake.Embed(
+            title="Translation request:",
+            description="You man only request individual words."
+        )
+        website = LinkButtons().view
+        return await inter.send(embed=embed, ephemeral=True, view = website)
+
+    with open(REQUEST_FILE) as request_file: #searches through current requests (faster)
                 for line in request_file:
-                    if line.strip() == user_message_arg:
-                        await message.channel.send(f"{mention}, someone else has already requested that word.")
-                        return
-            #for file in WORD_FILES: #searches through current translatable words (slower)
-            current_file = json.load(open(STORAGE_FILE, "r"))
-            current = list(current_file[0].keys())
-            if isinstance(user_message_arg, current):
-                await message.channel.send(f"{mention}, this world already has a translation.")
-                return
-            
-            with open(REQUEST_FILE, "a") as request_file: #adds request to requests file
-                request_file.write(user_message_arg+"\n")
-            await message.channel.send(f"{mention}, your request has been recieved. It will be dealt with as soon as possible.")
-            return
+                    if line.strip() == word:
+                        embed = disnake.Embed(
+                            title="Translation request:",
+                            description="That word has already been requested."
+                        )
+                        website = LinkButtons().view
+                        return await inter.send(embed=embed, ephemeral=True, view = website)
 
-        elif user_message == COMMAND_SYMBOL+"help":
-            await message.channel.send("```"+
-                                        f"{COMMAND_SYMBOL}help - shows this menu\n"+
-                                        f"{COMMAND_SYMBOL}translate - takes English into Naumarian\n"+
-                                        f"{COMMAND_SYMBOL}request - takes a word to be added into Naumarian"+
-                                        "```")
+    #for file in WORD_FILES: #searches through current translatable words (slower)
+    current_file = json.load(open(STORAGE_FILE, "r"))
+    current = list(current_file[0].keys())
+    if isinstance(word, current):
+        embed = disnake.Embed(
+            title="Request:",
+            description="That word already has a translation."
+        )
+        website = LinkButtons().view
+        return await inter.send(embed=embed, ephemeral=True, view = website)
 
-client.run(TOKEN)
+    with open(REQUEST_FILE, "a") as request_file: #adds request to requests file
+        request_file.write(word+"\n")
+        embed = disnake.Embed(
+                    title="Request:",
+                    description="Your request has been recieved. It will be dealt with as soon as possible."
+                )
+        website = LinkButtons().view
+        return await inter.send(embed=embed, ephemeral=True, view = website)
+
+#help command logic
+@bot.slash_command(name='help', description="Shows command list")
+async def help(inter: ApplicationCommandInteraction):
+    embed = disnake.Embed(
+        description=f"This bot uses the 3.0 version of the Naumarian Translator, so expect differences from the website\n"+
+                    f"\nCommands:\b"+
+                    f"/help - Shows this menu\n"+
+                    f"/translate - Takes English into Naumarian\n"+
+                    f"/publictranslate - Same as translate, but allows the whole server to see\n"+
+                    f"/request - Takes a word to be added into Naumarian"
+    )
+    website = LinkButtons().view
+    return await inter.send(embed=embed, ephemeral=True, view = website) 
+
+#Runs the bot
+try:
+    print("NauLingo is starting!")
+    bot.run(TOKEN)    
+except Exception as error:
+    print(f'Failed to start bot:\n {error}')
