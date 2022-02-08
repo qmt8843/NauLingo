@@ -5,5 +5,5 @@ because it makes better use of time complexitities bystoring the translations in
 
 Currently there is no reverse translation, but it is a top priority.
 
-Disnake: https://disnake.dev/
+Disnake: https://disnake.dev/\n
 Naumarian Website: https://www.naumarian.info/
