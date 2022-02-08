@@ -13,5 +13,5 @@ python_libraries.txt
 #hide translation requests
 requests.txt
 
-#hide word files
-nouns.txt
+#hide data files
+data
