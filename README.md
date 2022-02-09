@@ -6,5 +6,10 @@ because it makes better use of time complexitities bystoring the translations in
 <br />
 Currently there is no reverse translation, but it is a top priority.
 
+# Prerequisites
+Python 3.7.0+<br />
+Disnake
+
+# Sites
 Disnake: https://disnake.dev/<br />
 Naumarian Website: https://www.naumarian.info/
