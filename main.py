@@ -23,7 +23,7 @@ REQUEST_FILE = "requests.txt"
 STORAGE_FILE = "data/dict_storage.json"
 
 #establish a command trigger symbol
-bot = commands.Bot(command_prefix=commands.when_mentioned_or(f"{COMMAND_SYMBOL}"), test_guilds=[309140888485888002])
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(f"{COMMAND_SYMBOL}"), intents=disnake.Intents.all())
 
 ######################
 ###    BUTTONS     ###
