@@ -13,9 +13,6 @@ python_libraries.txt
 #hide translation requests
 requests.txt
 
-#hide data files
-data
-
 #hide discord.py version of bot
 main(deprecated).py
 
