@@ -26,9 +26,9 @@ def take_input(message):
     cons_dict = get_cons_dict()
     cons_keys = list(cons_dict.keys())
     for key in cons_keys:
-        message = re.sub(rf"\b({key}) (\w+)", rf"\1 \2{cons_dict[key]}", message, flags=re.IGNORECASE)
+        message = re.sub(rf"\b({key})( vona tna | voe ter | mognnen tna | zieden tna | zwe tna | )(\w+)", rf"\1\2\3{cons_dict[key]}", message, flags=re.IGNORECASE)
 
-    #conjugates all owns
+    # #conjugates all owns
     owns_dict = get_owns_dict()
     owns_keys = list(owns_dict.keys())
     for key in owns_keys:
@@ -97,4 +97,4 @@ def main():
     #convert_word_doc("data/paste.txt")
     #mass_add_word("data/paste.txt", "data/paste2.txt")
 
-#main()
+main()
