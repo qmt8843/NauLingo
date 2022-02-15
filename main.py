@@ -4,6 +4,7 @@ import json
 from disnake.ext import commands
 from disnake import ApplicationCommandInteraction
 from disnake import AppCmdInter
+import re
 
 #establish the bot's token
 with open("token.txt") as token_file:
@@ -23,7 +24,7 @@ REQUEST_FILE = "requests.txt"
 STORAGE_FILE = "data/dict_storage.json"
 
 #establish a command trigger symbol
-bot = commands.Bot(command_prefix=commands.when_mentioned_or(f"{COMMAND_SYMBOL}"), test_guilds=[309140888485888002])
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(f"{COMMAND_SYMBOL}"), intents=disnake.Intents.all())
 
 ######################
 ###    BUTTONS     ###
@@ -72,7 +73,7 @@ async def translate(inter: ApplicationCommandInteraction, sentence: str):
     translated = translator.take_input(sentence)
     embed = disnake.Embed(
         title="Naumarian translation:",
-        description=f"{translated}"
+        description=f"Old: {sentence}\n\nNew: {translated}"
     )
     website = LinkButtons().view
     return await inter.send(embed=embed, ephemeral=True, view = website)
@@ -84,7 +85,7 @@ async def translate(inter: ApplicationCommandInteraction, sentence: str):
     translated = translator.take_input(sentence)
     embed = disnake.Embed(
         title="Naumarian translation:",
-        description=f"{translated}"
+        description=f"Old: {sentence}\n\nNew: {translated}"
     )
     website = LinkButtons().view
     return await inter.send(embed=embed, ephemeral=False, view = website)
@@ -93,8 +94,8 @@ async def translate(inter: ApplicationCommandInteraction, sentence: str):
 #this command allows users to request words that don't have a translation
 @bot.slash_command(name='request', description="Makes a translation request")
 async def request(inter: ApplicationCommandInteraction, word: str):
-
-    if len(word.split(" ")) > 0:
+    #print(word.split(" ")[0])
+    if len(word.split(" ")) != 1:
         embed = disnake.Embed(
             title="Translation request:",
             description="You man only request individual words."
@@ -107,7 +108,7 @@ async def request(inter: ApplicationCommandInteraction, word: str):
                     if line.strip() == word:
                         embed = disnake.Embed(
                             title="Translation request:",
-                            description="That word has already been requested."
+                            description=f"Request: {word}\n\nThat word has already been requested."
                         )
                         website = LinkButtons().view
                         return await inter.send(embed=embed, ephemeral=True, view = website)
@@ -115,10 +116,10 @@ async def request(inter: ApplicationCommandInteraction, word: str):
     #for file in WORD_FILES: #searches through current translatable words (slower)
     current_file = json.load(open(STORAGE_FILE, "r"))
     current = list(current_file[0].keys())
-    if isinstance(word, current):
+    if word[0] in current:
         embed = disnake.Embed(
             title="Request:",
-            description="That word already has a translation."
+            description=f"Request: {word}\n\nThat word already has a translation."
         )
         website = LinkButtons().view
         return await inter.send(embed=embed, ephemeral=True, view = website)
@@ -127,7 +128,7 @@ async def request(inter: ApplicationCommandInteraction, word: str):
         request_file.write(word+"\n")
         embed = disnake.Embed(
                     title="Request:",
-                    description="Your request has been recieved. It will be dealt with as soon as possible."
+                    description=f"Request: {word}\n\nYour request has been recieved. It will be dealt with as soon as possible."
                 )
         website = LinkButtons().view
         return await inter.send(embed=embed, ephemeral=True, view = website)
