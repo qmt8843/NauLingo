@@ -1,0 +1,14 @@
+[
+    {
+        "word": "translated_word"
+    },
+    {
+        "ending": "translated_ending"
+    },
+    {
+        "pronoun": "translated_pronoun"
+    },
+    {
+        "ownership_determiner": "translated_ownership_determiner"
+    }
+]

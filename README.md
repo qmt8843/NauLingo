@@ -6,5 +6,19 @@ because it makes better use of time complexitities bystoring the translations in
 <br />
 Currently there is no reverse translation, but it is a top priority.
 
+# Prerequisites
+Python 3.7.0+<br />
+Disnake
+
+# Other Steps
+In order for this bot to work you will need to create three seperate files within the main directory<br />
+token.txt<br />
+Paste your bots token onto a single line, the main script will pull it from here<br /><br />
+replies.txt<br />
+This is where any translation replies will be held and searched for<br /><br />
+oauth2.txt<br />
+This is where you will put the invite link to your bot, this will be used in creating the link buttons<br /><br />
+
+# Sites
 Disnake: https://disnake.dev/<br />
 Naumarian Website: https://www.naumarian.info/
