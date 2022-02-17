@@ -70,10 +70,10 @@ class LinkButtons(disnake.ui.View):
 #translate command logic
 @bot.slash_command(name='translate', description="Translates English into Naumarian")
 async def translate(inter: ApplicationCommandInteraction, sentence: str):
-    translated = translator.take_input(sentence)
+    translated, time = translator.take_input(sentence)
     embed = disnake.Embed(
         title="Naumarian translation:",
-        description=f"Old: {sentence}\n\nNew: {translated}"
+        description=f"Old: {sentence}\n\nNew: {translated}\n\n`Time taken: {time} seconds`"
     )
     website = LinkButtons().view
     return await inter.send(embed=embed, ephemeral=True, view = website)
@@ -82,10 +82,10 @@ async def translate(inter: ApplicationCommandInteraction, sentence: str):
 #just isn't ephemeral
 @bot.slash_command(name='publictranslate', description="Translates English into Naumarian")
 async def translate(inter: ApplicationCommandInteraction, sentence: str):
-    translated = translator.take_input(sentence)
+    translated, time = translator.take_input(sentence)
     embed = disnake.Embed(
         title="Naumarian translation:",
-        description=f"Old: {sentence}\n\nNew: {translated}"
+        description=f"Old: {sentence}\n\nNew: {translated}\n\n`Time taken: {time} seconds`"
     )
     website = LinkButtons().view
     return await inter.send(embed=embed, ephemeral=False, view = website)
