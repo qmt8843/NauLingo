@@ -21,8 +21,6 @@ def take_input(message):
     ends_keys = list(ends_dict.keys())
     
     for key in words_keys:
-        #message = re.sub(rf"\b({key})d", rf"\1ed", message, re.IGNORECASE) #replaced english words that add 'd' to have 'ed'
-        #message = re.sub(rf"\b({key})r", rf"\1er", message, re.IGNORECASE) #replaced english words that add 'r' to have 'er'
         message = re.sub(rf"\b({key})(r|d)", rf"\1e\2", message, re.IGNORECASE) #replaced english words that add 'r' to have 'er'
         for ekey in ends_keys:
             #this nested for loop increases the time considerably, however it gives a better result
