@@ -103,22 +103,32 @@ async def request(inter: ApplicationCommandInteraction, word: str):
         website = LinkButtons().view
         return await inter.send(embed=embed, ephemeral=True, view = website)
 
+    count = 0
     with open(REQUEST_FILE) as request_file: #searches through current requests (faster)
-                for line in request_file:
-                    if line.strip() == word:
-                        embed = disnake.Embed(
+                if count < 1000:
+                    for line in request_file:
+                        count+=1
+                        if line.strip() == word:
+                            embed = disnake.Embed(
+                                title="Translation request:",
+                                description=f"Request: {word}\n\nThat word has already been requested."
+                            )
+                            website = LinkButtons().view
+                            return await inter.send(embed=embed, ephemeral=True, view = website)
+                else:
+                    embed = disnake.Embed(
                             title="Translation request:",
-                            description=f"Request: {word}\n\nThat word has already been requested."
+                            description=f"Request: {word}\n\nThere are currently too many requests. Try again later."
                         )
-                        website = LinkButtons().view
-                        return await inter.send(embed=embed, ephemeral=True, view = website)
+                    website = LinkButtons().view
+                    return await inter.send(embed=embed, ephemeral=True, view = website)
 
     #for file in WORD_FILES: #searches through current translatable words (slower)
     current_file = json.load(open(STORAGE_FILE, "r"))
     current = list(current_file[0].keys())
     if word[0] in current:
         embed = disnake.Embed(
-            title="Request:",
+            title="Translation request:",
             description=f"Request: {word}\n\nThat word already has a translation."
         )
         website = LinkButtons().view
@@ -127,7 +137,7 @@ async def request(inter: ApplicationCommandInteraction, word: str):
     with open(REQUEST_FILE, "a") as request_file: #adds request to requests file
         request_file.write(word+"\n")
         embed = disnake.Embed(
-                    title="Request:",
+                    title="Translation request:",
                     description=f"Request: {word}\n\nYour request has been recieved. It will be dealt with as soon as possible."
                 )
         website = LinkButtons().view
