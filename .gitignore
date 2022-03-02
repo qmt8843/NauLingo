@@ -7,9 +7,6 @@ owner_id.txt
 #hide logo purchase link
 logo_purchase.txt
 
-#hide python library list
-python_libraries.txt
-
 #hide translation requests
 requests.txt
 
