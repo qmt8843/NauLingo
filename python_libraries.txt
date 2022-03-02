@@ -1,2 +1,0 @@
-pip install discord
-py -3 -m pip install -U disnake
