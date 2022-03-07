@@ -69,34 +69,6 @@ def get_cons_dict():
 def get_corr_dict():
     return FULL_JSON[4]
 
-#adds a english:naumarian keyset to words dictionary to the json file
-def add_word(english, naumarian):
-    dict = json.load(open(STORAGE_FILE, "r"))
-    dict[0][english] = naumarian
-    with open(STORAGE_FILE, "wt") as f:
-        json.dump(dict, f, indent=4)
-
-def convert_word_doc(filename):
-    with open(filename) as file:
-        for line in file:
-            first = line.split(")(?")
-            second = line.split("?:")[0]
-            #second = line.split(r"\b")[1].split(")(?:")[0]
-
-            #second=first.split(")(")[1]
-            print(second)
-def mass_add_word(filename, filename2):
-    with open(filename) as english_file:
-        with open(filename2) as nau_file:
-            eng = english_file.readlines()
-            nau = nau_file.readlines()
-            for i in range(len(eng)):
-                add_word(eng[i].strip(), nau[i].strip())
-
 def main():
     inp = input("Give some input: ")
     print(take_input(inp))
-    #convert_word_doc("data/paste.txt")
-    #mass_add_word("data/paste.txt", "data/paste2.txt")
-
-#main()
