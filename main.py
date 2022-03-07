@@ -81,7 +81,6 @@ class LinkButtons(disnake.ui.View):
 #translate command logic
 @bot.slash_command(name='translate', description="Translates English into Naumarian")
 async def translate(inter: ApplicationCommandInteraction, sentence: str):
-    print(inter.guild)
     log("Translate", str(inter.author).encode('unicode-escape').decode('ASCII'), inter.channel, inter.guild, sentence.strip())
     translated, time = translator.take_input(sentence)
     embed = disnake.Embed(
