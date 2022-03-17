@@ -3,7 +3,7 @@ import translator
 import json
 from disnake.ext import commands
 from disnake import ApplicationCommandInteraction
-import datetime
+import logging
 
 #establish the bot's token
 with open("data/token.txt") as token_file:
@@ -20,22 +20,19 @@ with open("data/oauth2.txt") as token_file:
 REQUEST_FILE = "data/requests.txt"
 
 #establishes logging file
-LOG_FILE = "data/log.txt"
+LOG_FILE = "data/bot.log"
+
+#logging setup
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', encoding='utf-8', level=logging.DEBUG, handlers=[
+        logging.FileHandler("data\\bot.log"),
+        logging.StreamHandler()
+        ])
 
 #establishes a file for stored word dictionaries
 STORAGE_FILE = "data/dict_storage.json"
 
 #establish a command trigger symbol
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(f"{COMMAND_SYMBOL}"), intents=disnake.Intents.all())
-
-#helper function to log bot
-def log(reason, user, channel, server, text):
-    current_time = datetime.datetime.now()
-    if user != None:log_text = f"[{current_time}] User: {user} Channel: {channel} Server: {server} Reason: {reason} Note: {text}"
-    else: log_text = f"[{current_time}] Reason: {reason} Note: {text}"
-    print(log_text)
-    with open(LOG_FILE, "a") as file:
-        file.write(f"{log_text}\n")
 
 ######################
 ###    BUTTONS     ###
@@ -81,7 +78,7 @@ class LinkButtons(disnake.ui.View):
 #translate command logic
 @bot.slash_command(name='translate', description="Translates English into Naumarian")
 async def translate(inter: ApplicationCommandInteraction, sentence: str):
-    log("Translate", str(inter.author).encode('unicode-escape').decode('ASCII'), inter.channel, inter.guild, sentence.strip())
+    logging.info(f"[TRANSLATE] Author:{str(inter.author).encode('unicode-escape').decode('ASCII')}  Channel:{inter.channel}  Server:{inter.guild}  Note:{sentence.strip()}")
     translated, time = translator.take_input(sentence)
     embed = disnake.Embed(
         title="Naumarian translation:",
@@ -94,7 +91,7 @@ async def translate(inter: ApplicationCommandInteraction, sentence: str):
 #just isn't ephemeral
 @bot.slash_command(name='publictranslate', description="Translates English into Naumarian for the whole server to see")
 async def translate(inter: ApplicationCommandInteraction, sentence: str):
-    log("Public Translate", str(inter.author).encode('unicode-escape').decode('ASCII'), inter.channel, inter.guild, sentence.strip())
+    logging.info(f"[PUBLIC TRANSLATE] Author:{str(inter.author).encode('unicode-escape').decode('ASCII')}  Channel:{inter.channel}  Server:{inter.guild}  Note:{sentence.strip()}")
     translated, time = translator.take_input(sentence)
     embed = disnake.Embed(
         title="Naumarian translation:",
@@ -108,7 +105,7 @@ async def translate(inter: ApplicationCommandInteraction, sentence: str):
 @bot.slash_command(name='request', description="Makes a translation request")
 async def request(inter: ApplicationCommandInteraction, word: str):
     if len(word.split(" ")) != 1:
-        log("Request [NOT INDIVIDUAL]", str(inter.author).encode('unicode-escape').decode('ASCII'), inter.channel, inter.guild, word.strip())
+        logging.warning(f"[REQUEST] Issue:Not Individual  Author:{str(inter.author).encode('unicode-escape').decode('ASCII')}  Channel:{inter.channel}  Server:{inter.guild}  Note:{word.strip()}")
         embed = disnake.Embed(
             title="Translation request:",
             description="You man only request individual words."
@@ -122,7 +119,7 @@ async def request(inter: ApplicationCommandInteraction, word: str):
                     for line in request_file:
                         count+=1
                         if line.strip() == word:
-                            log("Request [ALREADY REQUESTED]", str(inter.author).encode('unicode-escape').decode('ASCII'), inter.channel, inter.guild, word.strip())
+                            logging.warning(f"[REQUEST] Issue:Already Requested  Author:{str(inter.author).encode('unicode-escape').decode('ASCII')}  Channel:{inter.channel}  Server:{inter.guild}  Note:{word.strip()}")
                             embed = disnake.Embed(
                                 title="Translation request:",
                                 description=f"Request: {word}\n\nThat word has already been requested."
@@ -130,7 +127,7 @@ async def request(inter: ApplicationCommandInteraction, word: str):
                             website = LinkButtons().view
                             return await inter.send(embed=embed, ephemeral=True, view = website)
                 else:
-                    log("Request [TOO MANY REQUESTS]", str(inter.author).encode('unicode-escape').decode('ASCII'), inter.channel, inter.guild, word.strip())
+                    logging.warning(f"[REQUEST] Issue:Too Many Requests  Author:{str(inter.author).encode('unicode-escape').decode('ASCII')}  Channel:{inter.channel}  Server:{inter.guild}  Note:{word.strip()}")
                     embed = disnake.Embed(
                             title="Translation request:",
                             description=f"Request: {word}\n\nThere are currently too many requests. Try again later."
@@ -142,7 +139,7 @@ async def request(inter: ApplicationCommandInteraction, word: str):
     current_file = json.load(open(STORAGE_FILE, "r"))
     current = list(current_file[0].keys())
     if word[0] in current:
-        log("Request [ALREADY EXISTS]", str(inter.author).encode('unicode-escape').decode('ASCII'), inter.channel, inter.guild, word.strip())
+        logging.warning(f"[REQUEST] Issue:Already Exists  Author:{str(inter.author).encode('unicode-escape').decode('ASCII')}  Channel:{inter.channel}  Server:{inter.guild}  Note:{word.strip()}")
         embed = disnake.Embed(
             title="Translation request:",
             description=f"Request: {word}\n\nThat word already has a translation."
@@ -152,7 +149,7 @@ async def request(inter: ApplicationCommandInteraction, word: str):
 
     with open(REQUEST_FILE, "a") as request_file: #adds request to requests file
         request_file.write(word+"\n")
-        log("Request [PROPER REQUEST]", str(inter.author).encode('unicode-escape').decode('ASCII'), inter.channel, inter.guild, word.strip())
+        logging.info(f"[REQUEST] Author:{str(inter.author).encode('unicode-escape').decode('ASCII')}  Channel:{inter.channel}  Server:{inter.guild}  Note:{word.strip()}")
         embed = disnake.Embed(
                     title="Translation request:",
                     description=f"Request: {word}\n\nYour request has been recieved. It will be dealt with as soon as possible."
@@ -163,6 +160,7 @@ async def request(inter: ApplicationCommandInteraction, word: str):
 #help command logic
 @bot.slash_command(name='help', description="Shows command list")
 async def help(inter: ApplicationCommandInteraction):
+    logging.warning(f"[HELP] Author:{str(inter.author).encode('unicode-escape').decode('ASCII')}  Channel:{inter.channel}  Server:{inter.guild}")
     log("Help", str(inter.author).encode('unicode-escape').decode('ASCII'), inter.channel, inter.guild, "")
     embed = disnake.Embed(
         description=f"This bot uses the 3.0 version of the Naumarian Translator, so expect differences from the website\n"+
@@ -177,7 +175,7 @@ async def help(inter: ApplicationCommandInteraction):
 
 #Runs the bot
 try:
-    log("Startup", None, None, None, "NauLingo is starting!")
+    logging.info(f"NauLingo is starting!")
     bot.run(TOKEN)  
 except Exception as error:
-    print(f'Failed to start bot:\n {error}')
+    logging.critical("FAILED TO START BOT:  {error}")
