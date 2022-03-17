@@ -72,5 +72,3 @@ def get_corr_dict():
 def main():
     inp = input("Give some input: ")
     print(take_input(inp))
-    
-main()
