@@ -1,6 +1,0 @@
-discord == 1.7.3
-discord.py == 1.7.3
-disnake == 2.3.1
-flask == 2.0.3
-flask-restful == 0.3.9
-flask-cors == 3.0.10

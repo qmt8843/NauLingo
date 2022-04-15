@@ -1,9 +1,6 @@
 #hide bot token
 token.txt
 
-#hide bot owner id
-owner_id.txt
-
 #hide logo purchase link
 logo_purchase.txt
 
@@ -15,3 +12,17 @@ main(deprecated).py
 
 #hide bot invite link
 oauth2.txt
+
+#hide dev tools
+devtools
+
+#hide ssl info
+privkey.pem
+cert.pem
+
+#hide logs
+http.log
+bot.log
+
+#hide restful version of web app
+restful-version.txt
