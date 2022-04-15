@@ -7,8 +7,14 @@ because it makes better use of time complexitities bystoring the translations in
 Currently there is no reverse translation, but it is a top priority.
 
 # Prerequisites
+Building and running this in docker should handle these
 Python 3.7.0+<br />
-Disnake
+Disnake<br />
+flask<br />
+flask-restful<br />
+flask-cors<br />
+gunicorn<br />
+
 
 # Other Steps
 In order for this bot to work you will need to create three seperate files within the main directory<br />
