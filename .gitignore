@@ -26,3 +26,9 @@ bot.log
 
 #hide restful version of web app
 restful-version.txt
+
+#hide reader
+reader.py
+
+#hide tests (not fully implemented)
+translator_tests.py
