@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<style>
+.textbox-holder{
+    background-color: rgb(233, 233, 233);
+    display:inline-flex;
+    justify-content: center;
+    width: 75%;
+    border-radius: 15px;
+    padding: 1%;
+    margin: 1%;
+}
+.textbox{
+    resize: none;
+    background-color: rgb(250, 250, 250);
+    width:50%;
+    border-radius: 15px;
+    padding: 3%;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 105%;
+    box-shadow: 3px 3px 3px 3px #dddddd;
+}
+.spacing{
+    width:1%;
+}
+.container{
+    display: flex;
+    justify-content: center;
+    height: 95vh;
+}
+</style>
+
+<html>
+    <div class="container">
+        <div id="holder" class="textbox-holder">
+            <textarea id="box1" class="textbox">Type English here</textarea>
+            <div class="spacing"></div>
+            <textarea id="box2" class="textbox" readonly spellcheck="false">See Naumarian here</textarea>
+        </div>
+    </div>
+</html>
+
+<script>
+    function changeText(){
+        const request = new XMLHttpRequest();
+
+        let url = new URL('https://backend.naumarian.info/translate');
+        url.searchParams.set('sentence', document.querySelector('#box1').value);
+
+        request.open('GET', url);
+        request.onload = function () {
+            if (request.readyState === request.DONE) {
+                if (request.status === 200) {
+                    document.querySelector('#box2').value = JSON.parse(request.response)["sentence"];
+                }
+            }
+        };
+
+        request.send(null);
+    }
+    
+    var thing = document.querySelector('#box1')
+    thing.addEventListener("keydown", function(event){
+        if(event.keyCode == 13 && !event.shiftKey){
+            changeText()
+        } 
+    });
+</script>
