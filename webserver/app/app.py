@@ -15,7 +15,7 @@ def hello_world():
         payload = {"sentence":output} #puts in a nice format
         return payload, 200 #OK
     except:
-        return "Missing sentence query, or issue with query data", 400 #BAD REQUEST
+        return "<h1>Bad Request</h1>\nMissing sentence query, or issue with query data", 400 #BAD REQUEST
 
 if __name__ == "__main__":
     # use 0.0.0.0 to use it in container
